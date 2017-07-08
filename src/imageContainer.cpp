@@ -388,6 +388,7 @@ void imageContainer::keyPressEvent( QKeyEvent *event ){
 	hide_menubar();
 	
 	switch( event->key() ){
+		case Qt::Key_Q:
 		case Qt::Key_Escape: close(); break;
 		case Qt::Key_Alt:
 				if( menubar )
@@ -411,6 +412,7 @@ void imageContainer::keyPressEvent( QKeyEvent *event ){
 				else
 					next_file();
 			break;
+		case Qt::Key_P:
 		case Qt::Key_Space:
 				if( mods & Qt::ControlModifier ){
 					viewer->restart_animation();
@@ -433,6 +435,7 @@ void imageContainer::keyPressEvent( QKeyEvent *event ){
 			break;
 			
 		case Qt::Key_F1: open_help(); break;
+		case Qt::Key_F:
 		case Qt::Key_F11: toogle_fullscreen(); break;
 			
 		case Qt::Key_Delete:
