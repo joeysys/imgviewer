@@ -112,7 +112,8 @@ class imageContainer: public QWidget{
 		~imageContainer();
 		
 		void load_image( QFileInfo filepath );
-		
+		void load_images( QFileInfoList fileList );
+
 #ifdef WIN_TOOLBAR
 	private:
 		QWinThumbnailToolButton* btn_prev{ nullptr };

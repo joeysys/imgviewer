@@ -217,6 +217,11 @@ void imageContainer::load_image( QFileInfo file ){
 	updatePosition();
 }
 
+void imageContainer::load_images( QFileInfoList fileList ){
+	files->set_files( fileList );
+	updatePosition();
+}
+
 
 void imageContainer::update_file(){
 	qDebug( "updating file: %s", files->file_name().toLocal8Bit().constData() );
@@ -247,15 +252,19 @@ void imageContainer::open_file(){
 		load_image( file );
 }
 void imageContainer::next_file(){
-	if( files->has_next() )
+	if( files->has_next() ) {
 		files->next_file();
+		resize_window(true);
+	}
 	else
 		QApplication::beep();
 }
 
 void imageContainer::prev_file(){
-	if( files->has_previous() )
+	if( files->has_previous() ) {
 		files->previous_file();
+		resize_window(true);
+	}
 	else
 		QApplication::beep();
 }
@@ -433,8 +442,10 @@ void imageContainer::keyPressEvent( QKeyEvent *event ){
 				else
 					next_file();
 			break;
-		case Qt::Key_P:
 		case Qt::Key_Space:
+				next_file();
+			break;
+		case Qt::Key_P:
 				if( mods & Qt::ControlModifier ){
 					viewer->restart_animation();
 					update_toogle_btn();

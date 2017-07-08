@@ -68,6 +68,15 @@ fileManager::fileManager( const QSettings& settings ) : settings( settings ), ha
 	collator.setIgnorePunctuation( punctuation );
 }
 
+void fileManager::set_files( QFileInfoList fileList ) {
+	load_files(fileList);
+	current_file = 0;
+	load_image(current_file);
+	emit file_changed();
+	emit position_changed();
+	loading_handler();
+}
+
 void fileManager::set_files( QFileInfo file ){
 	//Stop if it does not support file
 	if( !file.exists() || !supports_extension( file.fileName() ) ){
@@ -128,6 +137,31 @@ void fileManager::load_files( QDir current_dir ){
 		watcher.addPath( dir );
 	}
 }
+
+void fileManager::load_files( QFileInfoList fileList ) {
+	QString topPath;
+	for (int i=0; i<fileList.size(); i++) {
+		QFileInfo file = fileList.at(i);
+		if (!file.exists())
+			continue;
+		QString filePath = file.filePath();
+		if ( supports_extension( filePath ) ) {
+			files.push_back( {filePath, collator} );
+			QString path = file.absolutePath();
+			if (topPath.isEmpty() || topPath.indexOf(path) == 0) {
+				topPath = path;
+			}
+		}
+	}
+
+	if (topPath.isEmpty()) {
+		topPath = dir;
+	}
+	else if( topPath != dir ){
+		dir = topPath;
+	}
+}
+
 
 void fileManager::load_image( int pos ){
 	if( files[pos].cache )
