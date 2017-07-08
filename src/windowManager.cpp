@@ -52,9 +52,13 @@ QSize windowManager::resize_content( QSize wanted, QSize content, bool keep_aspe
 		best = std::max( best, getPosition( i ), []( std::pair<QRect,int> a, std::pair<QRect,int> b ){ return a.second < b.second; } );
 	
 	//Move and resize window. We need to convert dimensions to window size though.
-	window.move( best.first.topLeft() );
+	//window.move( best.first.topLeft() );
 	window.resize( best.first.size() + window.size() - content );
-	
+
+	int monitor = desktop->screenNumber( &window );
+	QRect space = desktop->availableGeometry( monitor );
+	window.move( toQPoint( space.size() - window.frameGeometry().size()) / 2 );
+
 	return best.first.size();
 }
 
