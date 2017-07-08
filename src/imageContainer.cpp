@@ -88,6 +88,7 @@ imageContainer::imageContainer( QWidget* parent ) : QWidget( parent )
 	menubar = NULL;
 	context = NULL;
 	menubar_autohide = settings.value( "autohide-menubar", false ).toBool();
+	is_cleanmode = false;
 	is_fullscreen = false;
 	setAcceptDrops( true ); //Drag&Drop
 	setContextMenuPolicy( Qt::PreventContextMenu );
@@ -104,6 +105,8 @@ imageContainer::imageContainer( QWidget* parent ) : QWidget( parent )
 	updateImageInfo();
 	updatePosition();
 	create_context();
+
+	toogle_cleanmode();
 	
 	//Connect signals
 	connect( viewer, SIGNAL( clicked() ),         this, SLOT( hide_menubar() ) );
@@ -345,6 +348,18 @@ void imageContainer::toogle_animation(){
 	update_toogle_btn();
 }
 
+void imageContainer::toogle_cleanmode(){
+	if ( is_cleanmode ) {
+		ui->control_sub->show();
+		menubar->show();
+		is_cleanmode = false;
+	}
+	else {
+		ui->control_sub->hide();
+		menubar->hide();
+		is_cleanmode = true;
+	}
+}
 
 void imageContainer::toogle_fullscreen(){
 	if( is_fullscreen ){
@@ -353,9 +368,14 @@ void imageContainer::toogle_fullscreen(){
 			showMaximized();
 		else
 			showNormal();
-		ui->control_sub->show();
-		if( menubar && !menubar_autohide )
-			menubar->show();
+		if( is_cleanmode ) {
+			ui->control_sub->hide();
+			menubar->hide();
+		} else {
+			ui->control_sub->show();
+			if( menubar && !menubar_autohide )
+				menubar->show();
+		}
 	}
 	else{
 		was_maximized = isMaximized();
@@ -378,6 +398,7 @@ void imageContainer::toogle_fullscreen(){
 		showFullScreen();
 		
 		settings.endGroup();
+		is_cleanmode = true;
 	}
 	is_fullscreen = !is_fullscreen;
 }
@@ -390,8 +411,8 @@ void imageContainer::keyPressEvent( QKeyEvent *event ){
 	switch( event->key() ){
 		case Qt::Key_Q:
 		case Qt::Key_Escape: close(); break;
-		case Qt::Key_Alt:
-				if( menubar )
+		case Qt::Key_M:
+				if( menubar && mods & Qt::ControlModifier )
 					menubar->show();
 				else
 					event->ignore();
@@ -421,14 +442,15 @@ void imageContainer::keyPressEvent( QKeyEvent *event ){
 				else
 					toogle_animation();
 			break;
+		case Qt::Key_R: resize_window( true ); break;
 		case Qt::Key_A:
 				if( mods & Qt::ControlModifier )
 					resize_window( mods & Qt::ShiftModifier );
 				else
 					event->ignore();
 			break;
-		case Qt::Key_H: viewer->mirrorHor(); break;
-		case Qt::Key_V: viewer->mirrorVer(); break;
+		case Qt::Key_Less: viewer->mirrorHor(); break;
+		case Qt::Key_Greater: viewer->mirrorVer(); break;
 		case Qt::Key_O:
 				if( mods & Qt::ControlModifier )
 					open_file();
@@ -437,6 +459,7 @@ void imageContainer::keyPressEvent( QKeyEvent *event ){
 		case Qt::Key_F1: open_help(); break;
 		case Qt::Key_F:
 		case Qt::Key_F11: toogle_fullscreen(); break;
+		case Qt::Key_V: toogle_cleanmode(); break;
 			
 		case Qt::Key_Delete:
 				delete_file( !(mods & Qt::ShiftModifier) );

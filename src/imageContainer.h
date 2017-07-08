@@ -66,6 +66,7 @@ class imageContainer: public QWidget{
 		
 	private:
 		bool is_fullscreen;
+		bool is_cleanmode;
 		bool was_maximized{ false };
 		
 		void create_menubar();
@@ -95,6 +96,7 @@ class imageContainer: public QWidget{
 	
 	public slots:
 		void toogle_animation();
+		void toogle_cleanmode();
 		void toogle_fullscreen();
 		void center_window();
 		
