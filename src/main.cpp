@@ -45,6 +45,20 @@ int main( int argc, char *argv[] ){
 		
 		main.load_image( filepath );
 	}
+
+	if( args.size() > 2 ){
+		QFileInfoList filelist;
+		for ( int i = 1; i < args.size(); i++ ){
+			QString filepath = args.at(i);
+
+			QUrl asUrl( filepath );
+			if( asUrl.isLocalFile() )
+				filepath = asUrl.toLocalFile();
+
+			filelist.append( filepath );
+		}
+		main.load_images( filelist );
+	}
 	
 	return a.exec();
 }

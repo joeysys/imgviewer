@@ -214,6 +214,11 @@ void imageContainer::load_image( QFileInfo file ){
 	updatePosition();
 }
 
+void imageContainer::load_images( QFileInfoList filelist ){
+	files->set_files( filelist );
+	updatePosition();
+}
+
 
 void imageContainer::update_file(){
 	qDebug( "updating file: %s", files->file_name().toLocal8Bit().constData() );

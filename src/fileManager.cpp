@@ -100,6 +100,15 @@ void fileManager::set_files( QFileInfo file ){
 	}
 }
 
+void fileManager::set_files( QFileInfoList filelist ){
+	load_files( filelist );
+	current_file = 0;
+	load_image( current_file );
+	emit file_changed();
+	emit position_changed();
+	loading_handler();
+}
+
 void fileManager::load_files( QDir current_dir ){
 	//If hidden, include hidden files
 	QDir::Filters filters = QDir::Files;
@@ -127,6 +136,28 @@ void fileManager::load_files( QDir current_dir ){
 		dir = path;
 		watcher.addPath( dir );
 	}
+}
+
+void fileManager::load_files( QFileInfoList filelist ){
+	QString top_path;
+	for ( int i = 0; i < filelist.size(); i++ ){
+		QFileInfo file = filelist.at(i);
+		if ( !file.exists() )
+			continue;
+		QString filepath = file.filePath();
+		if ( supports_extension( filepath ) ){
+			files.push_back( {filepath, collator} );
+			QString path = file.absolutePath();
+			if ( top_path.isEmpty() || top_path.indexOf( path ) == 0 ){
+				top_path = path;
+			}
+		}
+	}
+
+	if ( top_path.isEmpty() )
+		top_path = dir;
+	else if ( top_path != dir )
+		dir = top_path;
 }
 
 void fileManager::load_image( int pos ){
