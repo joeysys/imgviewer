@@ -139,25 +139,25 @@ void fileManager::load_files( QDir current_dir ){
 }
 
 void fileManager::load_files( QFileInfoList filelist ){
-	QString top_path;
-	for ( int i = 0; i < filelist.size(); i++ ){
-		QFileInfo file = filelist.at(i);
-		if ( !file.exists() )
-			continue;
-		QString filepath = file.filePath();
-		if ( supports_extension( filepath ) ){
-			files.push_back( {filepath, collator} );
-			QString path = file.absolutePath();
-			if ( top_path.isEmpty() || top_path.indexOf( path ) == 0 ){
-				top_path = path;
-			}
-		}
-	}
+    bool is_first = true;
+    QDir first_dir;
 
-	if ( top_path.isEmpty() )
-		top_path = dir;
-	else if ( top_path != dir )
-		dir = top_path;
+    for ( int i = 0; i < filelist.size(); i++ ) {
+        QFileInfo file = filelist.at(i);
+        if ( !file.exists() || !supports_extension( file.fileName() ) )
+            continue;
+
+        if ( is_first ) {
+            first_dir = file.absoluteDir();
+            QString path = first_dir.absolutePath();
+            if ( path != dir )
+                dir = path;
+            is_first = false;
+        }
+
+        QString relative_path = first_dir.relativeFilePath(file.absoluteFilePath());
+        files.push_back( {relative_path, collator} );
+    }
 }
 
 void fileManager::load_image( int pos ){
