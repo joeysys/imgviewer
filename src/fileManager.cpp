@@ -68,8 +68,8 @@ fileManager::fileManager( const QSettings& settings ) : settings( settings ), ha
 	collator.setIgnorePunctuation( punctuation );
 }
 
-void fileManager::set_files( QFileInfoList fileList ) {
-	load_files(fileList);
+void fileManager::set_files( QFileInfoList filelist ) {
+	load_files(filelist);
 	current_file = 0;
 	load_image(current_file);
 	emit file_changed();
@@ -138,30 +138,27 @@ void fileManager::load_files( QDir current_dir ){
 	}
 }
 
-void fileManager::load_files( QFileInfoList fileList ) {
-	QString topPath;
-	for (int i=0; i<fileList.size(); i++) {
-		QFileInfo file = fileList.at(i);
-		if (!file.exists())
-			continue;
-		QString filePath = file.filePath();
-		if ( supports_extension( filePath ) ) {
-			files.push_back( {filePath, collator} );
-			QString path = file.absolutePath();
-			if (topPath.isEmpty() || topPath.indexOf(path) == 0) {
-				topPath = path;
-			}
-		}
-	}
+void fileManager::load_files( QFileInfoList filelist ) {
+	bool is_first = true;
+	QDir first_dir;
 
-	if (topPath.isEmpty()) {
-		topPath = dir;
-	}
-	else if( topPath != dir ){
-		dir = topPath;
+	for ( int i = 0; i < filelist.size(); i++ ) {
+		QFileInfo file = filelist.at(i);
+		if ( !file.exists() || !supports_extension( file.fileName() ) )
+			continue;
+
+		if ( is_first ) {
+			first_dir = file.absoluteDir();
+			QString path = first_dir.absolutePath();
+			if ( path != dir )
+				dir = path;
+			is_first = false;
+		}
+
+		QString relative_path = first_dir.relativeFilePath(file.absoluteFilePath());
+		files.push_back( {relative_path, collator} );
 	}
 }
-
 
 void fileManager::load_image( int pos ){
 	if( files[pos].cache )

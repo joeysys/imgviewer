@@ -78,7 +78,7 @@ class fileManager : public QObject{
 		void load_image( int pos );
 		
 		void load_files( QDir dir );
-		void load_files( QFileInfoList fileList );
+		void load_files( QFileInfoList filelist );
 		void clear_cache();
 		
 		int find_file( File file );
@@ -91,7 +91,7 @@ class fileManager : public QObject{
 		
 		void set_files( QString file ){ set_files( QFileInfo( file ) ); }
 		void set_files( QFileInfo file );
-		void set_files( QFileInfoList fileList );
+		void set_files( QFileInfoList filelist );
 
 		bool has_file( int index ) const{ return index >= 0 && index < files.size(); }
 		bool has_file() const{ return has_file( current_file ); }

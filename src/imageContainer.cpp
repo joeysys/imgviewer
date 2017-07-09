@@ -217,8 +217,8 @@ void imageContainer::load_image( QFileInfo file ){
 	updatePosition();
 }
 
-void imageContainer::load_images( QFileInfoList fileList ){
-	files->set_files( fileList );
+void imageContainer::load_images( QFileInfoList filelist ){
+	files->set_files( filelist );
 	updatePosition();
 }
 
@@ -494,7 +494,7 @@ void imageContainer::mousePressEvent( QMouseEvent* event ){
 }
 
 void imageContainer::resize_window( bool only_upscale ){
-    if (viewer->sizeHint().isEmpty()) return;
+	if (viewer->sizeHint().isEmpty()) return;
 	if( !is_fullscreen ) //Buggy in fullscreen
 		manager->resize_content( viewer->sizeHint(), viewer->size(), viewer->auto_zoom_active(), only_upscale );
 }
